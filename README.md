@@ -1,5 +1,5 @@
 # Learning_Labs-9-Fraud-Analysis
-
+In this Project we're trying to understand regions that are most affected by the fraud, 
 ## Problem Statement: Questions to answer:
 1) Which region has the highest Outstanding Loan Balance exposure? Provide reasons and evidence for
 the analysis. Explain in approximately no less than (80 words)
