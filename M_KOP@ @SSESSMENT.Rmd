@@ -1,0 +1,101 @@
+---
+title: "Fraud Analysis_M-KOP@ @SSESSMENT"
+author: "ERICK@"
+date: "2024-"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem Statement: Questions to answer:
+
+1)  Which region has the highest Outstanding Loan Balance exposure. Provide reasons and evidence of the analysis. Explain in approximately no less than (80 words)
+2)  Giving reasons and rank the region that is highly affected by fraud.Show evidence and explain in approximately (70 words)
+3)  Using the data determine the most affected phone model, and in which region. Show evidence and explain in approximately (70 words).
+4)  Using the data show the most affected month by fraud. Show evidence and explain in approximately (50 words).
+5)  How could we potentially improve the fraud identification process? explain in approximately (100 words).
+6)  What operational improvements should we investigate to improve the fraud investigation process? explain in approximately (100 words).
+7)  Write an SQL query to replicate the results in Data-Sheet but only getting results for Suwami reg. Use the data on sheet named "Short schema".
+8)  Show the process you used to clean the data. Show evidence and explain in approximately (80 words)
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(janitor)
+```
+
+```{r warning=F, message=FALSE}
+df <- read_csv("C:/Users/langa/OneDrive/Desktop/Dataset/M-KOPA Fraud Analyst Intern Technical assessments.csv", 
+    col_types = cols(`Date of Sale` = col_date(format = "%m/%d/%Y"))) %>% 
+  clean_names()
+head(df)
+str(df)
+```
+
+```{r}
+#data cleaning
+#remove "C31" Replace with " "
+df$outstanding_loan_balance <- str_replace(df$outstanding_loan_balance, 
+                                           "C31", " ") %>% as.numeric()
+#date
+df$date_of_sale <- ymd(df$date_of_sale)
+```
+
+### Which region has the highest Outstanding Loan Balance exposure. Provide reasons and evidence of the analysis. Explain in approximately no less than (80 words)
+
+```{r}
+df %>% select(region, outstanding_loan_balance) %>% 
+      group_by(region) %>% 
+      summarise(Loan_Balance=sum(outstanding_loan_balance)) %>% 
+       arrange(desc(Loan_Balance))
+
+# as seen in the calculation,Suwami is leading in the outstanding loan balance by 8674531 followed by,Bumasi	8455168	, then Nilmark	5496709	 and finnally	
+# Bira	1002851
+```
+
+### 
+
+### Giving reasons and rank the region that is highly affected by fraud.Show evidence and explain in approximately (70 words)
+
+```{r warning=FALSE, message=FALSE}
+df %>%  select(region,investiagtion_outcome) %>% 
+  filter(investiagtion_outcome== "Confirmed to be Fraud") %>% 
+       group_by(region) %>% 
+      summarise(Fraud_occurrence=n()) %>% arrange(desc(Fraud_occurrence))
+
+# df %>%  pull(investiagtion_outcome) %>% unique()
+```
+
+### 
+
+### Using the data determine the most affected phone model, and in which region. Show evidence and explain in approximately (70 words).
+
+```{r warning=FALSE, message=FALSE}
+df %>% select(region, model,investiagtion_outcome ) %>% 
+        filter(investiagtion_outcome=="Confirmed to be Fraud") %>% 
+        group_by(region, model) %>% 
+        summarise(Leading_model=n()) %>%  
+            arrange(desc(Leading_model))
+```
+
+### Using the data show the most affected month by fraud. Show evidence and explain in approximately (50 words).
+
+```{r}
+df <- df %>% mutate(month= month(date_of_sale, label=T))# %>% colnames()
+# head(df$month)
+d <- df %>%  select(month, investiagtion_outcome) %>% 
+  filter(investiagtion_outcome=="Confirmed to be Fraud") %>% 
+ group_by(month) %>% 
+   summarise(NO_Fraud_month=n()) %>% arrange(desc(NO_Fraud_month))
+
+d
+```
+
+### How could we potentially improve the fraud identification process? explain in approximately (100 words).
+
+### What operational improvements should we investigate to improve the fraud investigation process? explain in approximately (100 words).
+
+### Write an SQL query to replicate the results in Data-Sheet but only getting results for Suwami reg. Use the data on sheet named "Short schema".
+
+### Show the process you used to clean the data. Show evidence and explain in approximately (80 words)
